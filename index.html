@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#111522" />
+    <meta
+      name="description"
+      content="导入姓名，让奶龙用眼睛激光随机选中一位。"
+    />
+    <title>奶龙激光点名器</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <svg class="laser-layer" id="laserLayer" aria-hidden="true">
+      <defs>
+        <filter id="laserGlow" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="7" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+        <linearGradient id="laserGradient" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#fff9df" />
+          <stop offset="0.16" stop-color="#ffdd4a" />
+          <stop offset="0.5" stop-color="#ff5c35" />
+          <stop offset="1" stop-color="#ff243a" />
+        </linearGradient>
+      </defs>
+      <g id="laserGroup">
+        <line id="laserLeftGlow" class="laser laser--glow" />
+        <line id="laserRightGlow" class="laser laser--glow" />
+        <line id="laserLeft" class="laser laser--core" />
+        <line id="laserRight" class="laser laser--core" />
+        <circle id="impactRing" class="impact-ring" r="10" />
+        <circle id="impactCore" class="impact-core" r="4" />
+      </g>
+    </svg>
+
+    <main class="app-shell" id="appShell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="奶龙激光点名器">
+          <span class="brand-mark" aria-hidden="true">
+            <span class="brand-eye"></span>
+            <span class="brand-eye"></span>
+          </span>
+          <span>
+            <strong data-i18n="brand">奶龙激光点名器</strong>
+            <small>NAILOONG PICKER</small>
+          </span>
+        </a>
+
+        <div class="topbar-actions">
+          <div class="status-pill" aria-live="polite">
+            <span class="status-dot"></span>
+            <span id="rosterStatus" data-i18n="awaiting">等待名单</span>
+          </div>
+          <button class="sound-toggle" id="soundToggle" type="button" aria-pressed="true" aria-label="关闭音效">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path class="speaker-shape" d="M5 9.5h3.2L13 5.6v12.8l-4.8-3.9H5z" />
+              <path class="sound-waves" d="M16 9.2a4 4 0 0 1 0 5.6M18.5 6.8a7.4 7.4 0 0 1 0 10.4" />
+              <path class="sound-muted" d="m16.2 9 5 5m0-5-5 5" />
+            </svg>
+            <span data-i18n="soundOn">音效</span>
+          </button>
+          <button class="language-toggle" id="languageToggle" type="button" aria-label="Switch to English">
+            <span class="lang-option is-active" data-lang-option="zh">中</span>
+            <span class="lang-divider"></span>
+            <span class="lang-option" data-lang-option="en">EN</span>
+          </button>
+        </div>
+      </header>
+
+      <section class="workspace">
+        <aside class="control-panel" aria-labelledby="setupTitle">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow" data-i18n="setupEyebrow">名单控制台</p>
+              <h1 id="setupTitle" data-i18n="setupTitle">今天点谁？</h1>
+            </div>
+            <span class="count-badge"><b id="nameCount">0</b><span data-i18n="peopleUnit">人</span></span>
+          </div>
+
+          <p class="panel-copy" data-i18n="setupCopy">
+            每行输入一个名字，或直接导入 TXT / CSV 名单。
+          </p>
+
+          <div class="input-wrap">
+            <label class="sr-only" for="nameInput" data-i18n="nameLabel">人物姓名</label>
+            <textarea
+              id="nameInput"
+              rows="9"
+              spellcheck="false"
+              data-i18n-placeholder="namePlaceholder"
+              placeholder="例如：&#10;林晓&#10;陈一&#10;周予"
+            ></textarea>
+            <span class="input-corner" aria-hidden="true"></span>
+          </div>
+
+          <div class="import-row">
+            <input id="fileInput" type="file" accept=".txt,.csv,text/plain,text/csv" hidden />
+            <button class="secondary-button" id="importButton" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14v5h14v-5" />
+              </svg>
+              <span data-i18n="importFile">导入文件</span>
+            </button>
+            <button class="text-button" id="clearButton" type="button" data-i18n="clear">清空</button>
+          </div>
+
+          <p class="helper-text" id="helperText" data-i18n="helper">
+            支持换行、逗号或制表符分隔，重复姓名会自动合并。
+          </p>
+
+          <button class="load-button" id="loadButton" type="button">
+            <span data-i18n="loadRoster">装载名单</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 12h14M14 7l5 5-5 5" />
+            </svg>
+          </button>
+        </aside>
+
+        <section class="arena" id="arena" aria-labelledby="arenaTitle">
+          <div class="arena-grid" aria-hidden="true"></div>
+          <div class="arena-header">
+            <div>
+              <p class="eyebrow eyebrow--gold" data-i18n="arenaEyebrow">激光选择区</p>
+              <h2 id="arenaTitle" data-i18n="readyTitle">奶龙准备就绪</h2>
+            </div>
+            <div class="scan-readout">
+              <span data-i18n="scanLabel">扫描状态</span>
+              <strong id="scanStatus" data-i18n="standby">待机</strong>
+            </div>
+          </div>
+
+          <div class="arena-body">
+            <figure class="character-card" id="characterCard">
+              <div class="image-shell">
+                <img
+                  src="./assets/nailoong.jpeg"
+                  alt="戴睡帽、抱着枕头的奶龙"
+                  data-i18n-alt="characterAlt"
+                  draggable="false"
+                />
+                <span class="eye-origin eye-origin--left" id="leftEye"></span>
+                <span class="eye-origin eye-origin--right" id="rightEye"></span>
+                <div class="image-shade"></div>
+              </div>
+              <figcaption>
+                <span class="character-state"><i></i><span data-i18n="characterReady">双眼能量稳定</span></span>
+                <span class="character-code">NL-0122</span>
+              </figcaption>
+            </figure>
+
+            <div class="target-zone" id="targetZone">
+              <div class="empty-state" id="emptyState">
+                <div class="radar" aria-hidden="true">
+                  <span class="radar-ring radar-ring--one"></span>
+                  <span class="radar-ring radar-ring--two"></span>
+                  <span class="radar-ring radar-ring--three"></span>
+                  <span class="radar-sweep"></span>
+                  <span class="radar-core"></span>
+                </div>
+                <h3 id="emptyTitleText" data-i18n="emptyTitle">目标区尚未装载</h3>
+                <p id="emptyCopyText" data-i18n="emptyCopy">在左侧添加姓名，奶龙就能开始扫描。</p>
+              </div>
+              <div class="name-grid" id="nameGrid" aria-label="候选名单"></div>
+            </div>
+          </div>
+
+          <div class="arena-footer">
+            <div class="instruction">
+              <span class="keycap" data-i18n="space">空格</span>
+              <span data-i18n="shortcut">可快速启动</span>
+            </div>
+            <button class="fire-button" id="fireButton" type="button" disabled>
+              <span class="fire-icon" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </span>
+              <span class="fire-label" data-i18n="fire">发射激光</span>
+              <span class="fire-shine"></span>
+            </button>
+            <p class="fair-note" data-i18n="fairNote">使用浏览器安全随机数，每个人机会相同</p>
+          </div>
+
+          <div class="winner-reveal" id="winnerReveal" role="dialog" aria-modal="true" aria-labelledby="winnerTitle" hidden>
+            <div class="winner-halo" aria-hidden="true"></div>
+            <button class="reveal-close" id="revealClose" type="button" aria-label="关闭">×</button>
+            <p class="winner-kicker" data-i18n="winnerKicker">命中目标</p>
+            <h2 id="winnerTitle">—</h2>
+            <p class="winner-subtitle" data-i18n="winnerSubtitle">确认后，此人将从本轮名单移除</p>
+            <div class="winner-actions">
+              <button class="again-button" id="againButton" type="button" data-i18n="again">移除并返回</button>
+            </div>
+          </div>
+          <div class="flash-layer" id="flashLayer" aria-hidden="true"></div>
+          <div class="particle-layer" id="particleLayer" aria-hidden="true"></div>
+        </section>
+      </section>
+
+      <footer class="site-footer">
+        <span data-i18n="unofficial">非官方互动页面 · 仅供课堂与日常使用</span>
+        <span>2026</span>
+      </footer>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <div class="sr-only" id="liveRegion" aria-live="assertive"></div>
+    <audio id="laserAudio" src="./assets/laser-sequence.wav?v=4" preload="auto" playsinline></audio>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>
