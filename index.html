@@ -47,7 +47,7 @@
           </span>
           <span>
             <strong data-i18n="brand">奶龙激光点名器</strong>
-            <small>NAILOONG PICKER</small>
+            <small>NAILOONG PICKER · 2.0</small>
           </span>
         </a>
 
@@ -113,6 +113,55 @@
             支持换行、逗号或制表符分隔，重复姓名会自动合并。
           </p>
 
+          <fieldset class="mode-picker" id="modePicker">
+            <legend data-i18n="modeLabel">选择演出模式</legend>
+            <div class="mode-options">
+              <button class="mode-option" type="button" data-mode="classic" aria-pressed="false">
+                <span class="mode-icon mode-icon--classic" aria-hidden="true"></span>
+                <span>
+                  <strong data-i18n="classicMode">经典激光</strong>
+                  <small data-i18n="classicDesc">快速扫描，直接锁定</small>
+                </span>
+              </button>
+              <button class="mode-option is-active" type="button" data-mode="epic" aria-pressed="true">
+                <span class="mode-icon mode-icon--epic" aria-hidden="true"></span>
+                <span>
+                  <strong data-i18n="epicMode">奶龙能量抢夺</strong>
+                  <small data-i18n="epicDesc">全员争夺核心，最终激光锁定</small>
+                </span>
+                <i>2.0</i>
+              </button>
+            </div>
+          </fieldset>
+
+          <details class="mode-guide">
+            <summary>
+              <span class="mode-guide-icon" aria-hidden="true">?</span>
+              <span data-i18n="modeGuideTitle">模式介绍</span>
+              <i aria-hidden="true"></i>
+            </summary>
+            <div class="mode-guide-body">
+              <article>
+                <span class="guide-number">01</span>
+                <div>
+                  <strong data-i18n="classicMode">经典激光</strong>
+                  <p data-i18n="classicGuide">快速扫描全部姓名并直接锁定，适合课堂点名和快速选择。</p>
+                </div>
+              </article>
+              <article>
+                <span class="guide-number guide-number--gold">02</span>
+                <div>
+                  <strong data-i18n="epicMode">奶龙能量抢夺</strong>
+                  <p data-i18n="epicGuide">姓名在竞技场中碰撞传递核心，扰乱球与能量雨会改变局势，最终由奶龙激光揭晓结果。</p>
+                </div>
+              </article>
+              <p class="mode-guide-fair">
+                <span aria-hidden="true">◆</span>
+                <span data-i18n="modeGuideFair">两种模式使用相同的安全随机规则；动画只负责演出，不会改变任何人的概率。</span>
+              </p>
+            </div>
+          </details>
+
           <button class="load-button" id="loadButton" type="button">
             <span data-i18n="loadRoster">装载名单</span>
             <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -154,6 +203,60 @@
             </figure>
 
             <div class="target-zone" id="targetZone">
+              <div class="energy-stage" id="raceStage" hidden aria-hidden="true">
+                <div class="energy-stage-head">
+                  <span class="energy-stage-label" data-i18n="raceSequence">奶龙杯 · 全员能量争夺</span>
+                  <div class="energy-phase-track" aria-hidden="true">
+                    <span data-race-phase="start" data-i18n="startShort">唤醒</span>
+                    <span data-race-phase="battle" data-i18n="battleShort">争夺</span>
+                    <span data-race-phase="sprint" data-i18n="sprintShort">过载</span>
+                    <span data-race-phase="photo" data-i18n="photoShort">锁定</span>
+                  </div>
+                </div>
+                <div class="energy-visual" id="raceVisual">
+                  <div class="energy-space" aria-hidden="true">
+                    <span></span><span></span><span></span><span></span>
+                  </div>
+                  <div class="energy-beacon" aria-hidden="true"><i></i><i></i><i></i></div>
+                  <svg class="energy-tether" id="energyTether" aria-hidden="true" preserveAspectRatio="none">
+                    <defs>
+                      <linearGradient id="energyTetherGradient" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0" stop-color="#fff6a2" />
+                        <stop offset="0.48" stop-color="#ffd43d" />
+                        <stop offset="1" stop-color="#ff4f78" />
+                      </linearGradient>
+                      <filter id="energyTetherGlow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="5" />
+                      </filter>
+                    </defs>
+                    <line class="energy-tether-glow" x1="48%" y1="51%" x2="48%" y2="51%" />
+                    <line class="energy-tether-core" x1="48%" y1="51%" x2="48%" y2="51%" />
+                  </svg>
+                  <div class="energy-rain" id="energyRain" aria-hidden="true"></div>
+                  <div class="energy-field" id="raceField"></div>
+                  <div class="energy-core" id="energyCore" aria-hidden="true">
+                    <i></i><i></i><span></span>
+                  </div>
+                  <div class="chaos-ball" id="chaosBall" aria-hidden="true"><i></i></div>
+                  <div class="energy-countdown" id="raceCountdown" aria-hidden="true"></div>
+                  <div class="energy-event" id="energyEvent" aria-live="polite"></div>
+                  <div class="photo-finish" id="photoFinish" hidden>
+                    <span data-i18n="photoReview">能量过载 · 正在锁定</span>
+                    <i></i>
+                  </div>
+                  <div class="leaderboard energy-board" aria-live="polite">
+                    <div class="leaderboard-head">
+                      <span data-i18n="liveRanking">能量排行</span>
+                      <b>LIVE</b>
+                    </div>
+                    <ol id="leaderboardRows"></ol>
+                  </div>
+                </div>
+                <div class="energy-caption">
+                  <strong id="racePhaseTitle">—</strong>
+                  <span id="racePhaseCopy">—</span>
+                </div>
+              </div>
               <div class="empty-state" id="emptyState">
                 <div class="radar" aria-hidden="true">
                   <span class="radar-ring radar-ring--one"></span>
