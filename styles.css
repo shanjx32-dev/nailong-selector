@@ -3061,6 +3061,44 @@ button:disabled {
 .chase-event.is-visible { opacity: 1; transform: translate(-50%, 0); }
 .chase-spark { position: absolute; z-index: 27; width: 44px; height: 44px; border: 2px solid #fff7b3; border-radius: 50%; opacity: 0; pointer-events: none; transform: translate(-50%, -50%); }
 .chase-spark.is-active { animation: chaseSpark 650ms ease-out both; }
+
+/* 3.5 keeps the chase arena but turns it into a central laser survival stage. */
+.chase-stage .chase-hunter { z-index: 31; }
+.chase-stage .chase-hunter-photo { animation: survivalBreath 1.3s ease-in-out infinite alternate; }
+.chase-stage .chase-eye { opacity: 1; width: 14px; height: 14px; }
+.chase-stage .chase-hunter-tag { background: #ffd665; }
+.chase-stage.is-final .chase-world { box-shadow: inset 0 0 95px rgba(0,0,0,.68); }
+.chase-stage.is-final .survival-beams line { filter: drop-shadow(0 0 6px #ff484d) drop-shadow(0 0 16px #ff323d); }
+.chase-stage.has-caught .chase-world { background: radial-gradient(ellipse at 50% 55%, #232b48, #0c1325 63%, #070c18); }
+.chase-stage .chase-spark { position: absolute; z-index: 33; inset: 0; width: auto; height: auto; border: 0; border-radius: 0; opacity: 1; transform: none; overflow: hidden; }
+.survival-beams { position: absolute; z-index: 29; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.survival-beams line { stroke: #fff3a3; stroke-width: 3; stroke-linecap: round; opacity: 0; filter: drop-shadow(0 0 4px #ff464f) drop-shadow(0 0 10px #ff404c); }
+.survival-beams.is-firing line { animation: survivalLaser 160ms ease-out both; }
+.survival-beams.is-firing line:nth-child(2) { stroke: #ff6770; stroke-width: 4; }
+.survival-shard { position: absolute; width: 6px; height: 9px; border-radius: 2px; box-shadow: 0 0 13px #ffe49e; pointer-events: none; animation: survivalShards 700ms cubic-bezier(.16,.78,.28,1) both; }
+.survival-shard.is-revival { border-radius: 50%; }
+.chase-stage .chase-spark .survival-fragment { z-index: 2; max-width: none; margin: 0; pointer-events: none; clip-path: polygon(0 var(--slice-top), 100% var(--slice-top), 100% var(--slice-bottom), 0 var(--slice-bottom)); animation: survivalFragment 720ms cubic-bezier(.14,.64,.28,1) both; }
+.survival-impact { position: absolute; z-index: 1; width: 18px; height: 18px; border: 2px solid #fff6c4; border-radius: 50%; background: radial-gradient(circle, #fff, #fff0a7 22%, #ff684b 45%, transparent 75%); box-shadow: 0 0 18px #ff9d55, 0 0 34px #ff4c44; pointer-events: none; animation: survivalImpact 680ms ease-out both; }
+.survival-impact.is-revival { border-color: #bafaff; background: radial-gradient(circle, #fff, #91f9ff 24%, transparent 70%); box-shadow: 0 0 23px #5defff; }
+.chase-runner.is-shattering { z-index: 30; animation: survivalShatter 190ms ease-out both; }
+.chase-runner.is-gone { visibility: hidden; opacity: 0; }
+.chase-runner.is-returning { visibility: visible; z-index: 32; animation: survivalReturn 800ms cubic-bezier(.16,1,.3,1) both; border-color: #a0f8ff; box-shadow: 0 0 0 7px rgba(97,229,255,.16), 0 0 30px #77e6ff; }
+.chase-runner.is-last-one { z-index: 34; color: #221c08; background: #ffe373; border-color: white; box-shadow: 0 0 0 9px rgba(255,220,90,.17), 0 0 35px #ffe173; animation: survivalWinner 840ms ease-in-out infinite alternate; }
+.revive-card { position: absolute; z-index: 42; top: 50%; left: 50%; display: grid; place-items: center; align-content: center; width: 140px; height: 162px; border: 2px solid #bafaff; border-radius: 17px 5px 17px 17px; color: #e1ffff; opacity: 0; background: linear-gradient(145deg, #1c5965, #17263f 60%, #18213b); box-shadow: 0 0 0 11px rgba(101,242,255,.08), 0 0 55px rgba(88,236,255,.68), inset 0 0 30px rgba(114,244,255,.14); transform: translate(-50%,-50%) scale(.4) rotate(-12deg); pointer-events: none; }
+.revive-card.is-visible { opacity: 1; animation: reviveEntrance 1250ms cubic-bezier(.15,.8,.25,1) both; }
+.revive-card span { font-size: 4.2rem; line-height: 1; text-shadow: 0 0 24px #89f5ff; }
+.revive-card strong { margin-top: 10px; font-size: .9rem; letter-spacing: .08em; }
+.revive-card em { margin-top: 4px; color: #b7faff; font-size: 1.45rem; font-weight: 900; font-style: normal; text-shadow: 0 0 16px #73eeff; }
+.chase-stage.is-reviving .chase-world::after { content: ""; position: absolute; z-index: 28; inset: 0; pointer-events: none; background: radial-gradient(circle at center, rgba(126,247,255,.22), transparent 63%); }
+@keyframes survivalBreath { to { transform: translateY(-3px) scale(1.018); } }
+@keyframes survivalLaser { 0% { opacity: 0; stroke-width: 8; } 25% { opacity: 1; } 70% { opacity: 1; } 100% { opacity: 0; stroke-width: 1; } }
+@keyframes survivalShards { 0% { opacity: 1; transform: translate(-50%,-50%) scale(.4) rotate(0); } 100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(.5) rotate(290deg); } }
+@keyframes survivalFragment { 0% { opacity: 1; transform: translate(-50%,-50%) rotate(0) scale(1); filter: brightness(2.2); } 24% { opacity: 1; } 100% { opacity: 0; transform: translate(calc(-50% + var(--fragment-x)), calc(-50% + var(--fragment-y))) rotate(var(--fragment-rotate)) scale(.75); filter: brightness(1.25); } }
+@keyframes survivalImpact { 0% { opacity: .95; transform: translate(-50%,-50%) scale(.45); } 45% { opacity: .9; } 100% { opacity: 0; transform: translate(-50%,-50%) scale(5.5); } }
+@keyframes survivalShatter { 0% { opacity: 1; scale: 1; filter: brightness(1); } 46% { opacity: 1; scale: 1.18; filter: brightness(3); } 100% { opacity: 0; scale: .8; filter: brightness(2); } }
+@keyframes survivalReturn { 0% { opacity: 0; scale: .1; filter: brightness(2); } 65% { opacity: 1; scale: 1.25; } 100% { opacity: 1; scale: 1; filter: none; } }
+@keyframes survivalWinner { to { scale: 1.13; filter: brightness(1.15); } }
+@keyframes reviveEntrance { 0% { opacity: 0; transform: translate(-50%,-50%) scale(.4) rotate(-12deg); } 28% { opacity: 1; transform: translate(-50%,-50%) scale(1.16) rotate(5deg); } 72% { opacity: 1; transform: translate(-50%,-50%) scale(1) rotate(0); } 100% { opacity: 0; transform: translate(-50%,-65%) scale(1.08) rotate(4deg); } }
 @keyframes hunterBounce { to { transform: translateY(-6px) rotate(4deg); } }
 @keyframes hunterSleep { to { transform: translateY(3px) scale(.95) rotate(-3deg); filter: brightness(.7); } }
 @keyframes hunterLunge { 45% { transform: translateY(-22px) scale(1.25) rotate(10deg); } 80% { transform: translateY(8px) scale(.9) rotate(-8deg); } }
@@ -3078,6 +3116,8 @@ button:disabled {
   .chase-hunter-tag { font-size: .52rem; }
   .chase-runner { max-width: 85px; min-height: 23px; padding: 3px 5px; }
   .chase-runner b { max-width: 62px; font-size: .6rem; }
+  .revive-card { width: 114px; height: 134px; }
+  .revive-card span { font-size: 3.2rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   .chase-hunter-photo, .chase-stage:not(.is-awake) .chase-hunter-photo, .chase-hunter.is-lunging .chase-hunter-photo { animation-duration: 1ms; }

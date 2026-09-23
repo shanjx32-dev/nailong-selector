@@ -17,11 +17,11 @@
       modeLabel: "选择演出模式",
       classicMode: "经典激光",
       classicDesc: "快速扫描，直接锁定",
-      epicMode: "奶龙抓人大战",
-      epicDesc: "全员逃跑，奶龙亲自追捕",
+      epicMode: "奶龙激光生存赛",
+      epicDesc: "击碎名字 · 复活反转 · 最后一人",
       modeGuideTitle: "模式介绍",
       classicGuide: "快速扫描全部姓名并直接锁定，适合课堂点名和快速选择。",
-      epicGuide: "所有名字同时逃跑；奶龙苏醒、追逐、扑空，场内出现随机事件，最终抓住本轮被选中的人。",
+      epicGuide: "奶龙站在中央逐个发射激光，命中的名字化成光片；中途复活卡随机带回多人，激光继续发射，最后留下的名字即为本轮结果。",
       modeGuideFair: "两种模式使用相同的安全随机规则；动画只负责演出，不会改变任何人的概率。",
       raceSequence: "奶龙杯 · 全员能量争夺",
       startShort: "唤醒",
@@ -41,20 +41,21 @@
       shortcut: "可快速启动",
       fire: "发射激光",
       fireClassic: "发射激光",
-      fireEpic: "开始抓人",
-      chaseTitle: "奶龙抓人大战 · 全员逃跑",
-      chaseHunter: "奶龙追来了！",
-      chaseWake: "别出声，奶龙还在睡觉…",
-      chaseRun: "快跑！奶龙开始找人了",
-      chaseFinal: "最后冲刺 · 奶龙要抓人了！",
-      chaseCaught: (name) => `抓到了！${name}`,
-      chaseMiss: "扑空了！大家继续跑",
-      chaseBubble: (name) => `${name} 被泡泡困住，又挣脱了！`,
+      fireEpic: "启动生存赛",
+      chaseTitle: "奶龙激光生存赛 · 全员上场",
+      chaseHunter: "双眼激光蓄能中",
+      chaseWake: "所有人已入场 · 奶龙正在蓄能",
+      chaseRun: "激光锁定 · 名字正在离场",
+      chaseFinal: "最后时刻 · 谁会留下？",
+      chaseCaught: (name) => `命中 ${name} · 名字化成光片`,
+      reviveCard: "复活卡",
+      chaseRevive: (count) => `复活卡发动！${count} 人重返场地`,
+      chaseSurvivor: (name) => `最后留下：${name}`,
       chaseLights: "灯灭了！小心奶龙的搜索光",
       chaseSlide: "地板打滑！全员变速",
       chasePillows: "枕头风暴！全场乱成一团",
-      chaseRemaining: (count) => `${count} 人在场`,
-      chaseWinner: "奶龙抓到了",
+      chaseRemaining: (count) => `场上剩余 ${count} 人`,
+      chaseWinner: "最后留下的是",
       fairNote: "同一轮不重复 · 使用浏览器安全随机数",
       winnerKicker: "命中目标",
       winnerSubtitle: "确认后，此人将从本轮名单移除",
@@ -121,11 +122,11 @@
       modeLabel: "Choose show mode",
       classicMode: "Classic Laser",
       classicDesc: "Quick scan and direct lock",
-      epicMode: "Nailoong Chase",
-      epicDesc: "Everyone runs. Nailoong gives chase.",
+      epicMode: "Nailoong Laser Survival",
+      epicDesc: "Laser hits · revival twist · last one standing",
       modeGuideTitle: "How the modes work",
       classicGuide: "Scans every name and locks the result quickly—ideal for roll call and fast picks.",
-      epicGuide: "Every name runs at once. Nailoong wakes, chases, misses and dodges surprises before catching this round’s pick.",
+      epicGuide: "Nailoong fires from the center. Names hit by the beams scatter into light; a revival card brings several players back before the last remaining name wins.",
       modeGuideFair: "Both modes use the same secure random selection. The animation never changes anyone’s odds.",
       raceSequence: "NAILOONG CUP · ALL-PLAYER ENERGY CLASH",
       startShort: "Awaken",
@@ -145,20 +146,21 @@
       shortcut: "to launch quickly",
       fire: "Fire laser",
       fireClassic: "Fire laser",
-      fireEpic: "Start the chase",
-      chaseTitle: "NAILOONG CHASE · EVERYONE RUNS",
-      chaseHunter: "Nailoong is coming!",
-      chaseWake: "Shhh… Nailoong is still asleep",
-      chaseRun: "Run! Nailoong is hunting",
-      chaseFinal: "Final sprint · one last grab!",
-      chaseCaught: (name) => `CAUGHT! ${name}`,
-      chaseMiss: "Missed! Keep running",
-      chaseBubble: (name) => `${name} escaped the bubble!`,
+      fireEpic: "Start Survival",
+      chaseTitle: "NAILOONG LASER SURVIVAL · ALL PLAYERS",
+      chaseHunter: "Eye lasers charging",
+      chaseWake: "Everyone is in · Nailoong is charging",
+      chaseRun: "Laser locked · names leaving the arena",
+      chaseFinal: "Final moments · who remains?",
+      chaseCaught: (name) => `HIT! ${name} scatters into light`,
+      reviveCard: "REVIVAL CARD",
+      chaseRevive: (count) => `REVIVAL! ${count} players return to the field`,
+      chaseSurvivor: (name) => `LAST ONE STANDING: ${name}`,
       chaseLights: "Lights out! Watch the searchlight",
       chaseSlide: "Slippery floor! Everyone speeds up",
       chasePillows: "Pillow storm! Total chaos",
-      chaseRemaining: (count) => `${count} runners on the field`,
-      chaseWinner: "Nailoong caught",
+      chaseRemaining: (count) => `${count} remaining`,
+      chaseWinner: "Last one standing",
       fairNote: "No repeats within a round · Secure browser randomness",
       winnerKicker: "Target acquired",
       winnerSubtitle: "Confirm to remove this person from the current round",
@@ -617,7 +619,7 @@
   function isCrownedName(name) {
     const normalized = name
       .normalize("NFKC")
-      .replace(/[\s·._\-—|/\\]+/g, "")
+      .replace(/[\s\u200b-\u200d\u2060·._\-—|/\\]+/g, "")
       .toLowerCase();
     return normalized === "山君行" || normalized === "kestrel" || (normalized.includes("山君行") && normalized.includes("kestrel"));
   }
@@ -1188,6 +1190,22 @@
     elements.flashLayer.classList.add("is-flashing");
   }
 
+  function playChaseZap(context) {
+    if (!context || !soundEnabled) return;
+    const now = context.currentTime;
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+    oscillator.type = "sawtooth";
+    oscillator.frequency.setValueAtTime(860, now);
+    oscillator.frequency.exponentialRampToValueAtTime(170, now + 0.16);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.045, now + 0.012);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.17);
+    oscillator.connect(gain).connect(context.destination);
+    oscillator.start(now);
+    oscillator.stop(now + 0.18);
+  }
+
   async function fireLaser() {
     if (isBusy || roster.length < 1) return;
     isBusy = true;
@@ -1204,10 +1222,18 @@
 
     winnerIndex = secureRandomIndex(roster.length);
     if (selectionMode === "epic") {
+      const eliminationOrder = secureShuffle(roster.map((_, index) => index).filter((index) => index !== winnerIndex));
+      const earlyCount = Math.max(1, Math.ceil(eliminationOrder.length * 0.55));
+      const revivalLimit = Math.min(earlyCount, roster.length <= 3 ? 1 : Math.min(10, Math.max(2, Math.ceil(roster.length * 0.22))));
+      const revivalMinimum = roster.length <= 3 ? 1 : Math.min(revivalLimit, Math.max(2, Math.ceil(revivalLimit * 0.7)));
+      const revivalCount = revivalMinimum + secureRandomIndex(revivalLimit - revivalMinimum + 1);
+      const reviveIndices = secureShuffle(eliminationOrder.slice(0, earlyCount)).slice(0, revivalCount);
       await window.NailoongChase.run({
-        roster, winnerIndex, reducedMotion,
+        roster, winnerIndex, eliminationOrder, reviveIndices, reducedMotion,
         translate: t,
+        isCrowned: isCrownedName,
         sound: (frequency, duration) => playPhasePing(soundContext, frequency, duration),
+        shotSound: () => playChaseZap(soundContext),
         finishSound: () => {
           const audio = elements.laserAudio;
           if (soundEnabled) {
