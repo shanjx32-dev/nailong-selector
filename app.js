@@ -17,11 +17,11 @@
       modeLabel: "选择演出模式",
       classicMode: "经典激光",
       classicDesc: "快速扫描，直接锁定",
-      epicMode: "奶龙能量抢夺",
-      epicDesc: "全员争夺核心，最终激光锁定",
+      epicMode: "奶龙抓人大战",
+      epicDesc: "全员逃跑，奶龙亲自追捕",
       modeGuideTitle: "模式介绍",
       classicGuide: "快速扫描全部姓名并直接锁定，适合课堂点名和快速选择。",
-      epicGuide: "姓名在竞技场中碰撞传递核心，扰乱球与能量雨会改变局势，最终由奶龙激光揭晓结果。",
+      epicGuide: "所有名字同时逃跑；奶龙苏醒、追逐、扑空，场内出现随机事件，最终抓住本轮被选中的人。",
       modeGuideFair: "两种模式使用相同的安全随机规则；动画只负责演出，不会改变任何人的概率。",
       raceSequence: "奶龙杯 · 全员能量争夺",
       startShort: "唤醒",
@@ -41,7 +41,20 @@
       shortcut: "可快速启动",
       fire: "发射激光",
       fireClassic: "发射激光",
-      fireEpic: "启动能量争夺",
+      fireEpic: "开始抓人",
+      chaseTitle: "奶龙抓人大战 · 全员逃跑",
+      chaseHunter: "奶龙追来了！",
+      chaseWake: "别出声，奶龙还在睡觉…",
+      chaseRun: "快跑！奶龙开始找人了",
+      chaseFinal: "最后冲刺 · 奶龙要抓人了！",
+      chaseCaught: (name) => `抓到了！${name}`,
+      chaseMiss: "扑空了！大家继续跑",
+      chaseBubble: (name) => `${name} 被泡泡困住，又挣脱了！`,
+      chaseLights: "灯灭了！小心奶龙的搜索光",
+      chaseSlide: "地板打滑！全员变速",
+      chasePillows: "枕头风暴！全场乱成一团",
+      chaseRemaining: (count) => `${count} 人在场`,
+      chaseWinner: "奶龙抓到了",
       fairNote: "同一轮不重复 · 使用浏览器安全随机数",
       winnerKicker: "命中目标",
       winnerSubtitle: "确认后，此人将从本轮名单移除",
@@ -108,11 +121,11 @@
       modeLabel: "Choose show mode",
       classicMode: "Classic Laser",
       classicDesc: "Quick scan and direct lock",
-      epicMode: "Nailoong Energy Clash",
-      epicDesc: "Everyone fights for the core until laser lock",
+      epicMode: "Nailoong Chase",
+      epicDesc: "Everyone runs. Nailoong gives chase.",
       modeGuideTitle: "How the modes work",
       classicGuide: "Scans every name and locks the result quickly—ideal for roll call and fast picks.",
-      epicGuide: "Names collide to pass the core while the chaos ball and energy rain reshape the match. Nailoong’s laser reveals the final result.",
+      epicGuide: "Every name runs at once. Nailoong wakes, chases, misses and dodges surprises before catching this round’s pick.",
       modeGuideFair: "Both modes use the same secure random selection. The animation never changes anyone’s odds.",
       raceSequence: "NAILOONG CUP · ALL-PLAYER ENERGY CLASH",
       startShort: "Awaken",
@@ -132,7 +145,20 @@
       shortcut: "to launch quickly",
       fire: "Fire laser",
       fireClassic: "Fire laser",
-      fireEpic: "Start Energy Clash",
+      fireEpic: "Start the chase",
+      chaseTitle: "NAILOONG CHASE · EVERYONE RUNS",
+      chaseHunter: "Nailoong is coming!",
+      chaseWake: "Shhh… Nailoong is still asleep",
+      chaseRun: "Run! Nailoong is hunting",
+      chaseFinal: "Final sprint · one last grab!",
+      chaseCaught: (name) => `CAUGHT! ${name}`,
+      chaseMiss: "Missed! Keep running",
+      chaseBubble: (name) => `${name} escaped the bubble!`,
+      chaseLights: "Lights out! Watch the searchlight",
+      chaseSlide: "Slippery floor! Everyone speeds up",
+      chasePillows: "Pillow storm! Total chaos",
+      chaseRemaining: (count) => `${count} runners on the field`,
+      chaseWinner: "Nailoong caught",
       fairNote: "No repeats within a round · Secure browser randomness",
       winnerKicker: "Target acquired",
       winnerSubtitle: "Confirm to remove this person from the current round",
@@ -361,6 +387,8 @@
     });
     const label = elements.fireButton.querySelector(".fire-label");
     if (label) label.textContent = t(selectionMode === "epic" ? "fireEpic" : "fireClassic");
+    const kicker = elements.winnerReveal.querySelector(".winner-kicker");
+    if (kicker) kicker.textContent = t(selectionMode === "epic" ? "chaseWinner" : "winnerKicker");
   }
 
   function syncSoundButton() {
@@ -1039,6 +1067,7 @@
     elements.arena.classList.remove("is-charging", "is-firing", "has-hit");
     elements.laserGroup.classList.remove("is-visible");
     cleanupRaceStage();
+    window.NailoongChase?.cleanup();
   }
 
   function loadRoster() {
@@ -1162,7 +1191,9 @@
   async function fireLaser() {
     if (isBusy || roster.length < 1) return;
     isBusy = true;
-    const sequenceAudio = await startSequenceAudio();
+    const sequenceAudio = selectionMode === "epic"
+      ? { usesFile: false, context: await ensureAudioContext() }
+      : await startSequenceAudio();
     const soundContext = sequenceAudio.context;
     lastFocused = document.activeElement;
     hideWinner(false);
@@ -1173,9 +1204,18 @@
 
     winnerIndex = secureRandomIndex(roster.length);
     if (selectionMode === "epic") {
-      if (!sequenceAudio.usesFile) playChargeSound(soundContext);
-      await runNailoongCup(winnerIndex, soundContext);
-      elements.laserGroup.classList.add("is-visible");
+      await window.NailoongChase.run({
+        roster, winnerIndex, reducedMotion,
+        translate: t,
+        sound: (frequency, duration) => playPhasePing(soundContext, frequency, duration),
+        finishSound: () => {
+          const audio = elements.laserAudio;
+          if (soundEnabled) {
+            audio.pause(); audio.currentTime = 0; audio.playbackRate = 1.35;
+            audio.play().catch(() => playHitSound(soundContext));
+          }
+        }
+      });
     } else {
       uiState = "charging";
       syncDynamicText();

@@ -126,10 +126,10 @@
               <button class="mode-option is-active" type="button" data-mode="epic" aria-pressed="true">
                 <span class="mode-icon mode-icon--epic" aria-hidden="true"></span>
                 <span>
-                  <strong data-i18n="epicMode">奶龙能量抢夺</strong>
-                  <small data-i18n="epicDesc">全员争夺核心，最终激光锁定</small>
+                  <strong data-i18n="epicMode">奶龙抓人大战</strong>
+                  <small data-i18n="epicDesc">全员逃跑，奶龙亲自追捕</small>
                 </span>
-                <i>2.0</i>
+                <i>3.0</i>
               </button>
             </div>
           </fieldset>
@@ -151,8 +151,8 @@
               <article>
                 <span class="guide-number guide-number--gold">02</span>
                 <div>
-                  <strong data-i18n="epicMode">奶龙能量抢夺</strong>
-                  <p data-i18n="epicGuide">姓名在竞技场中碰撞传递核心，扰乱球与能量雨会改变局势，最终由奶龙激光揭晓结果。</p>
+                  <strong data-i18n="epicMode">奶龙抓人大战</strong>
+                  <p data-i18n="epicGuide">所有名字同时逃跑；奶龙苏醒、追逐、扑空，场内出现随机事件，最终抓住本轮被选中的人。</p>
                 </div>
               </article>
               <p class="mode-guide-fair">
@@ -203,6 +203,22 @@
             </figure>
 
             <div class="target-zone" id="targetZone">
+              <div class="chase-stage" id="chaseStage" hidden aria-hidden="true">
+                <div class="chase-head"><span data-i18n="chaseTitle">奶龙抓人大战 · 全员逃跑</span><strong id="chaseTimer">18.0</strong></div>
+                <div class="chase-track"><i id="chaseProgress"></i></div>
+                <div class="chase-world" id="chaseWorld">
+                  <div class="chase-floor" aria-hidden="true"></div>
+                  <div class="chase-searchlight" id="chaseSearchlight" aria-hidden="true"></div>
+                  <div class="chase-runners" id="chaseRunners"></div>
+                  <div class="chase-hunter" id="chaseHunter" aria-hidden="true">
+                    <div class="chase-hunter-photo"><img src="./assets/nailoong-chase.png" alt="" draggable="false"/><span class="chase-eye chase-eye-left"></span><span class="chase-eye chase-eye-right"></span></div>
+                    <span class="chase-hunter-tag" data-i18n="chaseHunter">奶龙追来了！</span>
+                  </div>
+                  <div class="chase-spark" id="chaseSpark" aria-hidden="true"></div>
+                  <div class="chase-event" id="chaseEvent" aria-live="polite"></div>
+                </div>
+                <div class="chase-foot"><strong id="chasePhase" data-i18n="chaseWake">别出声，奶龙还在睡觉…</strong><span id="chaseCount"></span></div>
+              </div>
               <div class="energy-stage" id="raceStage" hidden aria-hidden="true">
                 <div class="energy-stage-head">
                   <span class="energy-stage-label" data-i18n="raceSequence">奶龙杯 · 全员能量争夺</span>
@@ -312,6 +328,7 @@
     <div class="sr-only" id="liveRegion" aria-live="assertive"></div>
     <audio id="laserAudio" src="./assets/laser-sequence.wav?v=4" preload="auto" playsinline></audio>
 
+    <script src="./chase.js" defer></script>
     <script src="./app.js" defer></script>
   </body>
 </html>
