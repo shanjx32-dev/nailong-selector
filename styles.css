@@ -3124,6 +3124,116 @@ button:disabled {
   .chase-event, .chase-world::before { transition-duration: 1ms; }
 }
 
+/* 4.0: skin archive and school crest pinball. */
+.skin-toggle { min-height: 39px; padding: 4px 15px; border: 1px solid rgba(255,216,77,.32); border-radius: 12px; color: #ffe88c; background: rgba(30,33,45,.88); cursor: pointer; font-size: .83rem; font-weight: 800; white-space: nowrap; }
+.skin-toggle:hover { background: rgba(255,216,77,.12); }
+.skin-toggle:disabled { opacity: .55; cursor: not-allowed; }
+.skin-dialog { width: min(92vw, 440px); padding: 29px; border: 1px solid rgba(180,210,244,.32); border-radius: 24px; color: #f6f9ff; background: linear-gradient(145deg,#192744,#101827 70%); box-shadow: 0 30px 90px #000b; }
+.skin-dialog::backdrop { background: rgba(2,7,16,.72); backdrop-filter: blur(7px); }
+.skin-dialog h2 { margin: 0 0 21px; font-size: 1.45rem; }
+.skin-close { position: absolute; top: 14px; right: 16px; border: 0; color: #e6eeff; background: none; font-size: 1.7rem; cursor: pointer; }
+.skin-dialog label { display: block; margin-bottom: 9px; font-size: .93rem; font-weight: 750; }
+.skin-dialog input { width: 100%; height: 47px; padding: 0 13px; border: 1px solid #51627b; border-radius: 10px; color: #fff; background: #0c1729; font: inherit; letter-spacing: .08em; }
+.skin-hint { margin: 9px 1px 16px; color: #aebbd0; font-size: .85rem; }
+.skin-unlock { width: 100%; min-height: 44px; border: 0; border-radius: 11px; color: #0e2544; background: #82d8fa; font-size: .94rem; font-weight: 850; cursor: pointer; }
+.skin-feedback { min-height: 1.3em; margin: 10px 0 0; color: #8de4fa; font-size: .85rem; }
+.skin-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 13px; }
+.skin-choices[hidden] { display: none; }
+.skin-choices button { display: flex; align-items: center; gap: 9px; min-height: 52px; padding: 9px; border: 1px solid #50627a; border-radius: 12px; color: #e6efff; background: #15243c; cursor: pointer; font-size: .82rem; font-weight: 700; }
+.skin-choices button.is-selected { border-color: #88e4ff; box-shadow: inset 0 0 18px #68d7ff26; }
+.skin-swatch { width: 26px; height: 26px; flex: none; border-radius: 50%; }
+.skin-swatch--classic { background: #ffd84d; }
+.skin-swatch--wlsa { background: linear-gradient(135deg,#142963,#4eaad8); }
+.mode-option[data-mode="pinball"] { grid-column: 1 / -1; }
+.mode-option[hidden], [data-wlsa-only][hidden] { display: none !important; }
+.mode-option.is-locked { opacity: .5; cursor: not-allowed; }
+.mode-option.is-locked:hover { border-color: var(--line); }
+.mode-icon--pinball { display: grid; place-items: center; width: 25px; height: 25px; border: 2px solid #90cce8; border-radius: 50%; color: #b5edff; font-size: 1rem; box-shadow: 0 0 14px #72c9e94d; }
+.arena.is-pinball .arena-body { grid-template-columns: minmax(0,1fr); }
+.arena.is-pinball .character-card { display: none; }
+.arena.is-pinball .target-zone { min-height: 475px; }
+.pinball-stage { position: absolute; z-index: 13; inset: 8px; display: grid; grid-template-rows: 62px minmax(0,1fr) 52px; overflow: hidden; border: 2px solid #a6d9ef9c; border-radius: 26px; background: #0b1e36; box-shadow: 0 24px 62px #000c, inset 0 0 0 5px #071627, inset 0 0 0 8px #5ca3c469, inset 0 0 42px #67c7ff30; isolation: isolate; }
+.pinball-stage[hidden] { display: none; }
+.pinball-stage::before { position: absolute; z-index: 4; inset: 7px; border: 1px solid #9dd6f159; border-radius: 19px; content: ""; pointer-events: none; box-shadow: inset 0 0 20px #83cbe82b; }
+.pinball-header, .pinball-footer { z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 23px; color: #d7eeff; background: linear-gradient(180deg,#1b3d59,#0a1c35 78%); }
+.pinball-header { border-bottom: 2px solid #92cce466; box-shadow: 0 4px 22px #0008; font-size: .92rem; letter-spacing: .1em; text-transform: uppercase; }
+.pinball-header strong { flex: 1; text-align: center; text-shadow: 0 0 13px #86d9ff8a; }
+.pinball-leds { display: flex; gap: 7px; }
+.pinball-leds i { width: 9px; height: 9px; border-radius: 50%; background: #7ee1ff; box-shadow: 0 0 7px #7ee1ff, 0 0 17px #58baff; animation: pinballLed 1.6s ease-in-out infinite alternate; }
+.pinball-leds i:nth-child(2) { animation-delay: .45s; }
+.pinball-leds i:nth-child(3) { animation-delay: .9s; }
+.pinball-header .pinball-clock { display: inline-flex; align-items: baseline; gap: 3px; min-width: 99px; padding: 6px 9px; border: 1px solid #82d5ef70; border-radius: 8px; color: #c5efff; background: #06182c; box-shadow: inset 0 2px 8px #0009, 0 0 15px #4bbbe634; font-variant-numeric: tabular-nums; font-weight: 850; letter-spacing: 0; text-transform: none; }
+.pinball-clock b { color: #fff; font-size: 1.23rem; line-height: 1; }
+.pinball-clock small { font-size: .66rem; }
+.pinball-glass { position: relative; min-width: 0; min-height: 0; overflow: hidden; isolation: isolate; }
+.pinball-glass::after { position: absolute; z-index: 2; inset: 0; background: linear-gradient(114deg,#fff2 0%,#fff0 14%,#fff0 42%,#b4e9ff12 44%,#fff0 49%,#fff0 76%,#d3f5ff0b 79%,#fff0 90%); content: ""; pointer-events: none; }
+.pinball-impact-flash { position: absolute; inset: 0; z-index: 3; opacity: 0; background: radial-gradient(circle at 50% 45%,#b3e8ff77,transparent 64%); pointer-events: none; }
+.pinball-impact-flash.is-active { animation: pinballImpact .34s ease-out both; }
+.pinball-outcome { position: absolute; z-index: 5; bottom: 114px; left: 50%; width: max-content; max-width: min(80%,370px); padding: 12px 20px; border: 1px solid #c5f1ff; border-radius: 12px; color: #fff; background: #0e3d64f0; box-shadow: 0 0 0 4px #7bd6fb33, 0 13px 35px #000b, 0 0 35px #60c9ff99; font-size: clamp(1.08rem, 2.4vw, 1.5rem); font-weight: 900; text-align: center; text-wrap: balance; opacity: 0; transform: translate(-50%, 16px) scale(.85); pointer-events: none; }
+.pinball-outcome.is-visible { animation: pinballOutcome .46s cubic-bezier(.16,1.28,.35,1) forwards; }
+.pinball-footer { border-top: 2px solid #92cce466; box-shadow: 0 -4px 22px #0008; font-size: .77rem; letter-spacing: .03em; }
+.pinball-footer strong { max-width: 45%; overflow: hidden; color: #b8efff; text-overflow: ellipsis; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.pinball-stage.has-landed .pinball-footer strong { color: #fff; text-shadow: 0 0 12px #70d9ff; }
+@keyframes pinballLed { to { opacity: .34; box-shadow: 0 0 3px #7ee1ff; } }
+@keyframes pinballImpact { 0% { opacity: .75; } 100% { opacity: 0; } }
+@keyframes pinballOutcome { to { opacity: 1; transform: translate(-50%,0) scale(1); } }
+#pinballCanvas { display: block; width: 100%; height: 100%; }
+body.theme-wlsa { --bg:#071327; --surface:#10213b; --surface-2:#142b49; --yellow:#69c8ef; --yellow-2:#a2e5ff; --yellow-deep:#4eaad8; --red:#50bdeb; --green:#76d8f2; --line:rgba(143,208,242,.17); background: radial-gradient(circle at 80% 0,#24558c45,transparent 32rem),radial-gradient(circle at 10% 75%,#4eaad825,transparent 30rem),#071327; }
+body.theme-wlsa .brand-mark { background: #4eaad8; box-shadow: 0 8px 25px #4eaad844; }
+body.theme-wlsa .skin-toggle { border-color: #73cef4; color: #c4efff; background: #142c49; }
+body.theme-wlsa .eyebrow--gold { color: #85daf9; }
+body.theme-wlsa .arena { background: radial-gradient(circle at 22% 65%,#4eaad834,transparent 32%),radial-gradient(circle at 100% 0,#185d9e36,transparent 30%),#0a1c35; }
+body.theme-wlsa .mode-option.is-active { border-color: #67caee; color: #eff9ff; background: linear-gradient(135deg,#4eaad82e,#14263f); box-shadow: inset 0 0 26px #7cdcff14; }
+body.theme-wlsa .mode-option:hover { border-color: #67caee89; }
+body.theme-wlsa .mode-guide[open] { border-color: #70cdee80; }
+body.theme-wlsa .mode-guide-icon { border-color: #73cfef80; background: #68cfff1a; }
+body.theme-wlsa .guide-number--gold { color: #0b2b4d; background: linear-gradient(135deg,#c2efff,#62bfe9); box-shadow: 0 0 14px #69cfff44; }
+body.theme-wlsa .mode-guide-fair { color: #a9c4d7; }
+body.theme-wlsa .load-button, body.theme-wlsa .load-button:hover { color: #0c2546; background: #79d2f3; box-shadow: 0 12px 32px #4eaad82a; }
+body.theme-wlsa .fire-button:not(:disabled) { color: #082344; background: linear-gradient(180deg,#a9eaff,#59bce8); box-shadow: 0 14px 34px #4eaad83a, inset 0 -4px 0 #17648e66; }
+body.theme-wlsa .target-zone { background: radial-gradient(circle at center,#4eaad81d,transparent 55%),#071528a8; border-color: #66c2ec55; }
+body.theme-wlsa .name-card.is-scanned { border-color: #82ddff; color: #e7faff; background: linear-gradient(135deg,#46c0ee55,#16314ccc); box-shadow: 0 0 18px #50c4ef9c; }
+body.theme-wlsa .name-card.is-scanned::before { background: #a3ebff; box-shadow: 0 0 10px #51cfff; }
+body.theme-wlsa .name-card.is-winner { border-color: #c5f5ff; color: #0a2b48; background: #8adbf6; box-shadow: 0 0 18px #50c4ef9c; }
+body.theme-wlsa .winner-reveal { color: #effbff; background: radial-gradient(circle at 50% 35%,#2873ab,#0b2342 72%); }
+body.theme-wlsa .winner-reveal h2 { text-shadow: 0 7px 0 #16395f88; }
+body.theme-wlsa .winner-subtitle { color: #b9e5f4; }
+body.theme-wlsa .again-button { color: #0b2a4a; background: #9ce3f9; }
+body.theme-wlsa .reveal-close { color: #d5f4ff; }
+body.theme-wlsa .winner-halo { background: repeating-conic-gradient(from 0deg,#75d9ff8a 0 4deg,transparent 4deg 14deg); }
+body.theme-wlsa .eye-origin, body.theme-wlsa .chase-eye { background: radial-gradient(circle,#fff 0 6%,#c5f7ff 13%,#57cbff 38%,#2792ec55 64%,transparent 75%); box-shadow: 0 0 15px #77dbff,0 0 33px #43bfff; }
+body.theme-wlsa .chase-stage { border-color: #8adfffaa; box-shadow: 0 24px 55px #0009,inset 0 0 40px #69d7ff20; }
+body.theme-wlsa .chase-hunter-tag { background: #80d9f8; color: #082a45; }
+body.theme-wlsa .chase-stage .chase-spark .survival-fragment { filter: hue-rotate(165deg); }
+body.theme-wlsa .survival-beams line, body.theme-wlsa .chase-stage.is-final .survival-beams line { stroke: #b2f2ff; filter: drop-shadow(0 0 7px #47c6ff) drop-shadow(0 0 14px #48bfff); }
+body.theme-wlsa .survival-beams.is-firing line:nth-child(2) { stroke: #65c8ff; }
+body.theme-wlsa .survival-impact { border-color: #dcfaff; background: radial-gradient(circle,#fff,#a0efff 22%,#3aaaf1 45%,transparent 75%); box-shadow: 0 0 24px #48c6ff; }
+body.theme-wlsa .survival-shard { background: #86e7ff !important; box-shadow: 0 0 14px #6ecfff; }
+body.theme-wlsa .laser--glow { stroke: #37bdffe0; }
+body.theme-wlsa .laser--core { filter: drop-shadow(0 0 6px #76ddff); }
+body.theme-wlsa #laserGradient stop:nth-child(1) { stop-color: #f0fdff; }
+body.theme-wlsa #laserGradient stop:nth-child(2) { stop-color: #a6f0ff; }
+body.theme-wlsa #laserGradient stop:nth-child(3) { stop-color: #5dd4ff; }
+body.theme-wlsa #laserGradient stop:nth-child(4) { stop-color: #218be1; }
+body.theme-wlsa .impact-ring { stroke: #64d6ff; }
+body.theme-wlsa .impact-core { fill: #dcfaff; }
+@media (max-width: 620px) {
+  .skin-toggle { min-height: 39px; padding: 4px 9px; font-size: .72rem; }
+  .topbar-actions { gap: 6px; }
+  .brand { min-width: 0; gap: 7px; }
+  .brand strong { max-width: 95px; }
+  .pinball-stage { inset: 4px; grid-template-rows: 52px minmax(0,1fr) 48px; border-radius: 19px; }
+  .pinball-header, .pinball-footer { padding-inline: 13px; gap: 7px; }
+  .pinball-header { font-size: .74rem; letter-spacing: .03em; }
+  .pinball-leds { gap: 4px; }
+  .pinball-leds i { width: 6px; height: 6px; }
+  .pinball-header .pinball-clock { min-width: 75px; padding: 5px; }
+  .pinball-clock b { font-size: 1rem; }
+  .pinball-clock small { font-size: .58rem; }
+  .pinball-footer { font-size: .67rem; }
+  .pinball-outcome { bottom: 105px; padding: 10px 12px; }
+}
+
 @keyframes energyBackdrop { to { transform: rotate(360deg); } }
 @keyframes orbitSpin { to { transform: rotate(360deg); } }
 @keyframes energyWave { 0% { opacity: 0.72; transform: scale(0.2); } 100% { opacity: 0; transform: scale(1); } }

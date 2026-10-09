@@ -47,11 +47,12 @@
           </span>
           <span>
             <strong data-i18n="brand">奶龙激光点名器</strong>
-            <small>NAILOONG PICKER · 3.5</small>
+            <small>NAILOONG PICKER · 4.0</small>
           </span>
         </a>
 
         <div class="topbar-actions">
+          <button class="skin-toggle" id="skinToggle" type="button" data-i18n="skinButton">换皮肤</button>
           <div class="status-pill" aria-live="polite">
             <span class="status-dot"></span>
             <span id="rosterStatus" data-i18n="awaiting">等待名单</span>
@@ -129,7 +130,15 @@
                   <strong data-i18n="epicMode">奶龙激光生存赛</strong>
                   <small data-i18n="epicDesc">击碎名字 · 复活反转 · 最后一人</small>
                 </span>
-                <i>3.5</i>
+                <i>4.0</i>
+              </button>
+              <button class="mode-option" type="button" data-mode="pinball" aria-pressed="false" hidden>
+                <span class="mode-icon mode-icon--pinball" aria-hidden="true">●</span>
+                <span>
+                  <strong data-i18n="pinballMode">校徽弹珠机</strong>
+                  <small data-i18n="pinballDesc">弹跳碰撞 · 落入姓名槽</small>
+                </span>
+                <i>NEW</i>
               </button>
             </div>
           </fieldset>
@@ -155,9 +164,16 @@
                   <p data-i18n="epicGuide">奶龙站在中央逐个发射激光，命中的名字化成光片；中途复活卡带回一人，最后留下的名字即为本轮结果。</p>
                 </div>
               </article>
+              <article data-wlsa-only hidden>
+                <span class="guide-number">03</span>
+                <div>
+                  <strong data-i18n="pinballMode">校徽弹珠机</strong>
+                  <p data-i18n="pinballGuide">校徽弹珠经过木棍与碰撞点，约 8 秒后落入姓名槽，槽中的人就是本轮结果。</p>
+                </div>
+              </article>
               <p class="mode-guide-fair">
                 <span aria-hidden="true">◆</span>
-                <span data-i18n="modeGuideFair">两种模式使用相同的安全随机规则；动画只负责演出，不会改变任何人的概率。</span>
+                <span data-i18n="modeGuideFair">三种模式使用相同的安全随机规则；动画只负责演出，不会改变任何人的概率。</span>
               </p>
             </div>
           </details>
@@ -186,7 +202,7 @@
           <div class="arena-body">
             <figure class="character-card" id="characterCard">
               <div class="image-shell">
-                <img
+                <img id="characterImage"
                   src="./assets/nailoong.jpeg"
                   alt="戴睡帽、抱着枕头的奶龙"
                   data-i18n-alt="characterAlt"
@@ -203,6 +219,19 @@
             </figure>
 
             <div class="target-zone" id="targetZone">
+              <div class="pinball-stage" id="pinballStage" hidden aria-hidden="true">
+                <div class="pinball-header">
+                  <span class="pinball-leds" aria-hidden="true"><i></i><i></i><i></i></span>
+                  <strong data-i18n="pinballTitle">校徽弹珠机</strong>
+                  <span class="pinball-clock"><small data-i18n="pinballTimeLabel">剩余</small><b id="pinballTime">8.0</b><small>s</small></span>
+                </div>
+                <div class="pinball-glass">
+                  <canvas id="pinballCanvas" aria-hidden="true"></canvas>
+                  <div class="pinball-impact-flash" id="pinballImpact" aria-hidden="true"></div>
+                  <div class="pinball-outcome" id="pinballOutcome" aria-live="polite"></div>
+                </div>
+                <div class="pinball-footer"><span data-i18n="pinballHint">校徽正在穿过木棍阵列</span><strong id="pinballFocus"></strong></div>
+              </div>
               <div class="chase-stage" id="chaseStage" hidden aria-hidden="true">
                 <div class="chase-head"><span data-i18n="chaseTitle">奶龙激光生存赛 · 全员上场</span><strong id="chaseTimer">18.0</strong></div>
                 <div class="chase-track"><i id="chaseProgress"></i></div>
@@ -215,7 +244,7 @@
                     <line id="survivalBeamRight" x1="0" y1="0" x2="0" y2="0" />
                   </svg>
                   <div class="chase-hunter" id="chaseHunter" aria-hidden="true">
-                    <div class="chase-hunter-photo"><img src="./assets/nailoong-chase.png" alt="" draggable="false"/><span class="chase-eye chase-eye-left"></span><span class="chase-eye chase-eye-right"></span></div>
+                    <div class="chase-hunter-photo"><img id="chaseImage" src="./assets/nailoong-chase.png" alt="" draggable="false"/><span class="chase-eye chase-eye-left"></span><span class="chase-eye chase-eye-right"></span></div>
                     <span class="chase-hunter-tag" data-i18n="chaseHunter">双眼激光蓄能中</span>
                   </div>
                   <div class="revive-card" id="reviveCard" aria-hidden="true"><span>↺</span><strong data-i18n="reviveCard">复活卡</strong><em id="reviveCount"></em></div>
@@ -330,10 +359,27 @@
     </main>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <dialog class="skin-dialog" id="skinDialog" aria-labelledby="skinTitle">
+      <button class="skin-close" id="skinClose" type="button" aria-label="关闭">×</button>
+      <p class="eyebrow" data-i18n="skinEyebrow">皮肤档案</p>
+      <h2 id="skinTitle" data-i18n="skinTitle">解锁隐藏皮肤</h2>
+      <form id="skinForm">
+        <label for="skinCode" data-i18n="skinPrompt">请输入神秘代码</label>
+        <input id="skinCode" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="32" />
+        <p class="skin-hint" data-i18n="skinHint">我们在哪</p>
+        <button class="skin-unlock" type="submit" data-i18n="skinUnlock">解锁</button>
+        <p class="skin-feedback" id="skinFeedback" role="status" aria-live="polite"></p>
+      </form>
+      <div class="skin-choices" id="skinChoices" hidden>
+        <button type="button" data-skin="default"><span class="skin-swatch skin-swatch--classic"></span><span data-i18n="skinClassic">经典奶龙</span></button>
+        <button type="button" data-skin="wlsa"><span class="skin-swatch skin-swatch--wlsa"></span><span data-i18n="skinWlsa">WLSA 奶龙</span></button>
+      </div>
+    </dialog>
     <div class="sr-only" id="liveRegion" aria-live="assertive"></div>
     <audio id="laserAudio" src="./assets/laser-sequence.wav?v=4" preload="auto" playsinline></audio>
 
     <script src="./survival.js" defer></script>
+    <script src="./pinball.js" defer></script>
     <script src="./app.js" defer></script>
   </body>
 </html>

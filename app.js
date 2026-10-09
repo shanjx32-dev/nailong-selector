@@ -19,10 +19,33 @@
       classicDesc: "快速扫描，直接锁定",
       epicMode: "奶龙激光生存赛",
       epicDesc: "击碎名字 · 复活反转 · 最后一人",
+      pinballMode: "校徽弹珠机",
+      pinballDesc: "弹跳碰撞 · 随机传送 · 落入姓名槽",
+      pinballLocked: "WLSA 专属 · 切换至 WLSA 皮肤后可用",
+      pinballGuide: "WLSA 皮肤专属。校徽弹珠经过木棍与碰撞点，途中可能出现随机传送门，将球送往新位置继续下落；约 8 秒后落入姓名槽，槽中的人就是本轮结果。",
+      pinballTitle: "校徽弹珠机",
+      pinballHint: "撞开木棍 · 冲向姓名槽",
+      pinballTimeLabel: "剩余",
+      pinballHits: (count) => `碰撞 ${count} 次`,
+      pinballReady: (count) => `${count} 个姓名槽已就位`,
+      pinballLanding: (name) => `落入 ${name} 的槽位`,
+      pinballPortal: "传送门开启 · 轨迹重置！",
+      firePinball: "发射校徽弹珠",
+      pinballWinner: "弹珠落点",
+      skinButton: "换皮肤",
+      skinEyebrow: "皮肤档案",
+      skinTitle: "解锁隐藏皮肤",
+      skinPrompt: "请输入神秘代码",
+      skinHint: "我们在哪",
+      skinUnlock: "解锁",
+      skinWrong: "代码不对，再想想我们在哪。",
+      skinUnlocked: "WLSA 皮肤已解锁！",
+      skinClassic: "经典奶龙",
+      skinWlsa: "WLSA 奶龙",
       modeGuideTitle: "模式介绍",
       classicGuide: "快速扫描全部姓名并直接锁定，适合课堂点名和快速选择。",
       epicGuide: "奶龙站在中央逐个发射激光，命中的名字化成光片；中途复活卡随机带回多人，激光继续发射，最后留下的名字即为本轮结果。",
-      modeGuideFair: "两种模式使用相同的安全随机规则；动画只负责演出，不会改变任何人的概率。",
+      modeGuideFair: "各模式使用相同的安全随机规则；动画只负责演出，不会改变任何人的概率。",
       raceSequence: "奶龙杯 · 全员能量争夺",
       startShort: "唤醒",
       battleShort: "争夺",
@@ -124,10 +147,33 @@
       classicDesc: "Quick scan and direct lock",
       epicMode: "Nailoong Laser Survival",
       epicDesc: "Laser hits · revival twist · last one standing",
+      pinballMode: "Crest Pinball",
+      pinballDesc: "Bounce · random portals · name slots",
+      pinballLocked: "WLSA exclusive · switch to the WLSA skin to play",
+      pinballGuide: "Exclusive to the WLSA skin. The crest ball bounces past wooden pegs. Random portals may send it to a new location to continue falling. It reaches a name slot in about 8 seconds; that name is the result.",
+      pinballTitle: "CREST PINBALL",
+      pinballHint: "Bounce through the pegs · reach a name slot",
+      pinballTimeLabel: "LEFT",
+      pinballHits: (count) => `${count} bounces`,
+      pinballReady: (count) => `${count} name slots ready`,
+      pinballLanding: (name) => `LANDED ON ${name}`,
+      pinballPortal: "PORTAL OPEN · NEW TRAJECTORY!",
+      firePinball: "Launch crest ball",
+      pinballWinner: "Ball landed on",
+      skinButton: "Skins",
+      skinEyebrow: "SKIN ARCHIVE",
+      skinTitle: "Unlock a hidden skin",
+      skinPrompt: "Enter the secret code",
+      skinHint: "Where are we?",
+      skinUnlock: "Unlock",
+      skinWrong: "That code is not quite right. Where are we?",
+      skinUnlocked: "WLSA skin unlocked!",
+      skinClassic: "Classic Nailoong",
+      skinWlsa: "WLSA Nailoong",
       modeGuideTitle: "How the modes work",
       classicGuide: "Scans every name and locks the result quickly—ideal for roll call and fast picks.",
       epicGuide: "Nailoong fires from the center. Names hit by the beams scatter into light; a revival card brings several players back before the last remaining name wins.",
-      modeGuideFair: "Both modes use the same secure random selection. The animation never changes anyone’s odds.",
+      modeGuideFair: "All modes use the same secure random selection. The animation never changes anyone’s odds.",
       raceSequence: "NAILOONG CUP · ALL-PLAYER ENERGY CLASH",
       startShort: "Awaken",
       battleShort: "Clash",
@@ -236,6 +282,16 @@
     statusPill: $(".status-pill"),
     scanStatus: $("#scanStatus"),
     soundToggle: $("#soundToggle"),
+    skinToggle: $("#skinToggle"),
+    skinDialog: $("#skinDialog"),
+    skinClose: $("#skinClose"),
+    skinForm: $("#skinForm"),
+    skinCode: $("#skinCode"),
+    skinFeedback: $("#skinFeedback"),
+    skinChoices: $("#skinChoices"),
+    characterImage: $("#characterImage"),
+    chaseImage: $("#chaseImage"),
+    pinballStage: $("#pinballStage"),
     laserAudio: $("#laserAudio"),
     modeOptions: document.querySelectorAll("[data-mode]"),
     languageToggle: $("#languageToggle"),
@@ -278,6 +334,8 @@
   let language = getSavedLanguage();
   let soundEnabled = getSavedSoundPreference();
   let selectionMode = getSavedMode();
+  let skinUnlocked = false;
+  let activeSkin = "default";
   let audioContext = null;
   let activeLaserSound = null;
   let roster = [];
@@ -318,7 +376,7 @@
   function getSavedMode() {
     try {
       const saved = localStorage.getItem("nailoong-picker-mode-v2");
-      if (saved === "classic" || saved === "epic") return saved;
+      if (saved === "classic" || saved === "epic" || saved === "pinball") return saved;
     } catch (_) {
       // The epic mode remains the default when storage is unavailable.
     }
@@ -329,6 +387,30 @@
     const value = translations[language][key];
     return typeof value === "function" ? value(...args) : value;
   }
+
+  function setSkin(skin) {
+    activeSkin = skin === "wlsa" && skinUnlocked ? "wlsa" : "default";
+    document.body.classList.toggle("theme-wlsa", activeSkin === "wlsa");
+    elements.characterImage.src = activeSkin === "wlsa" ? "./assets/nailoong-wlsa.jpeg" : "./assets/nailoong.jpeg";
+    elements.chaseImage.src = activeSkin === "wlsa" ? "./assets/nailoong-wlsa-cutout.png" : "./assets/nailoong-chase.png";
+    elements.skinChoices.querySelectorAll("[data-skin]").forEach((button) => {
+      button.classList.toggle("is-selected", button.dataset.skin === activeSkin);
+      button.setAttribute("aria-pressed", String(button.dataset.skin === activeSkin));
+    });
+    try { localStorage.setItem("nailoong-picker-skin-v4", activeSkin); } catch (_) { /* Optional. */ }
+    if (activeSkin !== "wlsa" && selectionMode === "pinball") {
+      selectionMode = "epic";
+      try { localStorage.setItem("nailoong-picker-mode-v2", selectionMode); } catch (_) { /* Optional. */ }
+    }
+    syncModeUI();
+  }
+
+  try {
+    skinUnlocked = localStorage.getItem("nailoong-picker-unlocked-v4") === "yes";
+    activeSkin = localStorage.getItem("nailoong-picker-skin-v4") === "wlsa" && skinUnlocked ? "wlsa" : "default";
+  } catch (_) { /* Skin selection still works without storage. */ }
+  elements.skinChoices.hidden = !skinUnlocked;
+  setSkin(activeSkin);
 
   function parseNames(raw) {
     const pieces = raw
@@ -371,6 +453,8 @@
     elements.languageToggle.setAttribute("aria-label", t("languageLabel"));
     syncSoundButton();
     elements.revealClose.setAttribute("aria-label", t("close"));
+    elements.skinClose.setAttribute("aria-label", t("close"));
+    if (elements.skinFeedback.dataset.state) elements.skinFeedback.textContent = t(elements.skinFeedback.dataset.state);
     elements.nameGrid.setAttribute("aria-label", t("candidateList"));
     syncModeUI();
     syncDynamicText();
@@ -383,14 +467,22 @@
 
   function syncModeUI() {
     elements.modeOptions.forEach((option) => {
+      const locked = option.dataset.mode === "pinball" && activeSkin !== "wlsa";
+      option.disabled = locked;
+      if (option.dataset.mode === "pinball") option.hidden = locked;
+      option.classList.toggle("is-locked", locked);
+      if (option.dataset.mode === "pinball") {
+        option.querySelector('[data-i18n="pinballDesc"]').textContent = t(locked ? "pinballLocked" : "pinballDesc");
+      }
       const isActive = option.dataset.mode === selectionMode;
       option.classList.toggle("is-active", isActive);
       option.setAttribute("aria-pressed", String(isActive));
     });
+    document.querySelectorAll('[data-wlsa-only]').forEach((node) => { node.hidden = activeSkin !== "wlsa"; });
     const label = elements.fireButton.querySelector(".fire-label");
-    if (label) label.textContent = t(selectionMode === "epic" ? "fireEpic" : "fireClassic");
+    if (label) label.textContent = t(selectionMode === "epic" ? "fireEpic" : selectionMode === "pinball" ? "firePinball" : "fireClassic");
     const kicker = elements.winnerReveal.querySelector(".winner-kicker");
-    if (kicker) kicker.textContent = t(selectionMode === "epic" ? "chaseWinner" : "winnerKicker");
+    if (kicker) kicker.textContent = t(selectionMode === "epic" ? "chaseWinner" : selectionMode === "pinball" ? "pinballWinner" : "winnerKicker");
   }
 
   function syncSoundButton() {
@@ -619,9 +711,9 @@
   function isCrownedName(name) {
     const normalized = name
       .normalize("NFKC")
-      .replace(/[\s\u200b-\u200d\u2060·._\-—|/\\]+/g, "")
+      .replace(/[^\p{L}\p{N}]/gu, "")
       .toLowerCase();
-    return normalized === "山君行" || normalized === "kestrel" || (normalized.includes("山君行") && normalized.includes("kestrel"));
+    return normalized.includes("山君行") || normalized.includes("kestrel");
   }
 
   function renderRoster() {
@@ -1070,6 +1162,7 @@
     elements.laserGroup.classList.remove("is-visible");
     cleanupRaceStage();
     window.NailoongChase?.cleanup();
+    window.NailoongPinball?.cleanup();
   }
 
   function loadRoster() {
@@ -1208,8 +1301,9 @@
 
   async function fireLaser() {
     if (isBusy || roster.length < 1) return;
+    if (selectionMode === "pinball" && activeSkin !== "wlsa") return;
     isBusy = true;
-    const sequenceAudio = selectionMode === "epic"
+    const sequenceAudio = selectionMode !== "classic"
       ? { usesFile: false, context: await ensureAudioContext() }
       : await startSequenceAudio();
     const soundContext = sequenceAudio.context;
@@ -1219,9 +1313,16 @@
     elements.fireButton.disabled = true;
     elements.loadButton.disabled = true;
     elements.clearButton.disabled = true;
+    elements.skinToggle.disabled = true;
 
     winnerIndex = secureRandomIndex(roster.length);
-    if (selectionMode === "epic") {
+    if (selectionMode === "pinball") {
+      await window.NailoongPinball.run({
+        roster, winnerIndex, reducedMotion, isCrowned: isCrownedName,
+        translate: t,
+        sound: () => playPhasePing(soundContext, 590, 0.08)
+      });
+    } else if (selectionMode === "epic") {
       const eliminationOrder = secureShuffle(roster.map((_, index) => index).filter((index) => index !== winnerIndex));
       const earlyCount = Math.max(1, Math.ceil(eliminationOrder.length * 0.55));
       const revivalLimit = Math.min(earlyCount, roster.length <= 3 ? 1 : Math.min(10, Math.max(2, Math.ceil(roster.length * 0.22))));
@@ -1298,6 +1399,7 @@
     elements.fireButton.disabled = false;
     elements.loadButton.disabled = false;
     elements.clearButton.disabled = false;
+    elements.skinToggle.disabled = false;
   }
 
   function showWinner(name) {
@@ -1373,9 +1475,44 @@
   elements.againButton.addEventListener("click", () => hideWinner());
   elements.revealClose.addEventListener("click", () => hideWinner());
 
+  elements.skinToggle.addEventListener("click", () => {
+    elements.skinCode.value = "";
+    elements.skinFeedback.textContent = "";
+    elements.skinFeedback.dataset.state = "";
+    elements.skinChoices.hidden = !skinUnlocked;
+    elements.skinDialog.showModal();
+    if (!skinUnlocked) elements.skinCode.focus();
+  });
+  elements.skinClose.addEventListener("click", () => elements.skinDialog.close());
+  elements.skinDialog.addEventListener("click", (event) => {
+    if (event.target === elements.skinDialog) elements.skinDialog.close();
+  });
+  elements.skinForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (elements.skinCode.value.trim().toLowerCase() !== "wlsa") {
+      elements.skinFeedback.dataset.state = "skinWrong";
+      elements.skinFeedback.textContent = t("skinWrong");
+      elements.skinCode.focus();
+      return;
+    }
+    skinUnlocked = true;
+    try { localStorage.setItem("nailoong-picker-unlocked-v4", "yes"); } catch (_) { /* Optional. */ }
+    elements.skinChoices.hidden = false;
+    elements.skinFeedback.dataset.state = "skinUnlocked";
+    elements.skinFeedback.textContent = t("skinUnlocked");
+    setSkin("wlsa");
+  });
+  elements.skinChoices.querySelectorAll("[data-skin]").forEach((button) => {
+    button.addEventListener("click", () => {
+      setSkin(button.dataset.skin);
+      elements.skinDialog.close();
+    });
+  });
+
   elements.modeOptions.forEach((option) => {
     option.addEventListener("click", () => {
       if (isBusy) return;
+      if (option.dataset.mode === "pinball" && activeSkin !== "wlsa") return;
       selectionMode = option.dataset.mode;
       syncModeUI();
       try {
@@ -1425,6 +1562,7 @@
       event.code === "Space" &&
       !event.repeat &&
       document.activeElement !== elements.nameInput &&
+      !elements.skinDialog.open &&
       elements.winnerReveal.hidden
     ) {
       event.preventDefault();
